@@ -41,7 +41,7 @@ pub fn generate(bit_size: u32) -> Result<(PublicKey,SecretKey),String> {
     }
 
     let (p,q) = f(p_size,q_size)?;
-    let n = p * q;
+    let n = p.clone() * q.clone();
 
     let public_key = PublicKey{e,n};
     let secret_key = SecretKey{p,q};
