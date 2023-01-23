@@ -16,7 +16,7 @@ fn test_decrypted_cipher_gives_original_plaintext() -> Result<(),String> {
     let plaintext_bytes = dbg!(plaintext.clone().into_bytes());
 
     let (pk,sk) = rsa::keygen(2048)?;
-    let cipher = rsa::encrypt(plaintext_bytes, pk);
+    let cipher = dbg!(rsa::encrypt(plaintext_bytes, pk));
 
     let res_bytes = dbg!(rsa::decrypt(cipher, sk)?);
     let res = String::from_utf8(res_bytes).map_err(|x|x.to_string())?;
