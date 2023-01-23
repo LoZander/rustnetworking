@@ -46,6 +46,10 @@ impl BigUint {
     pub fn to_bytes_be(&self) -> Vec<u8> {
         self.inner.to_bytes_be()
     }
+
+    pub fn bit_size(&self) -> u32 {
+        self.inner.bits() as u32
+    }
 }
 
 impl Display for BigUint {

@@ -8,6 +8,12 @@ pub struct PublicKey {
     n: BigUint
 }
 
+impl PublicKey {
+    pub fn bit_size(&self) -> u32 {
+        self.n.bit_size()
+    }
+}
+
 pub struct SecretKey {
     p: BigUint,
     q: BigUint
@@ -66,7 +72,7 @@ pub fn keygen(bit_size: u32) -> Result<KeyPair,String> {
             return f(p_size,q_size)
         }
 
-        if p_candidate.clone() * q_candidate.clone() > bound {
+        if p_candidate.bit_size() + q_candidate.bit_size() > p_size as u32 + q_size as u32 {
             return f(p_size, q_size)
         }
 
