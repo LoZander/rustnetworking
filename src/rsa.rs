@@ -63,10 +63,6 @@ pub fn keygen(bit_size: u32) -> Result<KeyPair,String> {
     fn f(p_size: usize,q_size: usize) -> Result<(BigUint,BigUint), String> {
         let p_candidate = new_prime(p_size);
         let q_candidate = new_prime(q_size);
-        
-        let mut vec_of_bound = vec![0; p_size + q_size];
-        vec_of_bound.insert(vec_of_bound.len() - 1,1);
-        let bound = BigUint::new(vec_of_bound);
 
         if p_candidate == q_candidate {
             return f(p_size,q_size)
