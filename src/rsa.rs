@@ -125,18 +125,10 @@ pub fn keygen(bit_size: u32) -> Result<KeyPair,String> {
 /// # Ok(())
 /// # }
 /// ```
-pub fn encrypt(m: Plaintext, pk: PublicKey) -> Ciphertext {
-    let m_number = number_from_bytes(m);
-    let cipher = m_number.modpow(&BigUint::from_i32(E).unwrap(), &pk.n);
-    bytes_from_number(cipher)
-}
-
-fn number_from_bytes(m: Plaintext) -> BigUint {
-    BigUint::from_bytes_be(&m)
-}
-
-fn bytes_from_number(c: BigUint) -> Ciphertext {
-    c.to_bytes_be()
+pub fn encrypt<T: Into<Plaintext>>(plaintext: T, pk: PublicKey) -> Ciphertext {
+    let plaintext_as_number: BigUint = plaintext.into().into();
+    let cipher = plaintext_as_number.modpow(&BigUint::from_i32(E).unwrap(), &pk.n);
+    cipher.into()
 }
 
 
@@ -167,12 +159,12 @@ fn bytes_from_number(c: BigUint) -> Ciphertext {
 /// 
 /// # Errors
 /// [`decrypt`] gives an error when given a bad or wrong [`SecretKey`],
-pub fn decrypt(c: Ciphertext, sk: SecretKey) -> Result<Plaintext,String> {
-    let c_number = number_from_bytes(c);
+pub fn decrypt<T: Into<Ciphertext>>(ciphertext: T, sk: SecretKey) -> Result<Plaintext,String> {
+    let ciphertext_number: BigUint = ciphertext.into().into();
     let d = create_d(&sk.p,&sk.q).map_err(|_| "bad key")?;
 
-    let message = c_number.modpow(&d, &(sk.p * sk.q));
-    Ok(bytes_from_number(message))
+    let message = ciphertext_number.modpow(&d, &(sk.p * sk.q));
+    Ok(message.into())
 }
 
 fn create_d(p: &BigUint,q: &BigUint) -> Result<BigUint,String> {
