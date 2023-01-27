@@ -1,4 +1,10 @@
-use rustnetworking::rsa::{authenticity::{self as auth, Signature, Verification}, keygen, confidentiality::Message};
+use rustnetworking::{
+    rsa::{
+        authenticity::{self as auth, Signature, Verification},
+        keygen, 
+        confidentiality::{self as conf, Message},
+        E}, 
+    big_num::BigUint};
 
 #[test]
 fn verification_of_correct_message_sign_pair_accepts() -> Result<(),String> {
@@ -25,4 +31,18 @@ fn verification_of_message_modified_by_adversary_rejects() -> Result<(),String> 
         Verification::Reject => Ok(())
     }
 
+}
+
+#[test]
+fn message_cannot_be_forged_so_verification_accepts() -> Result<(),String> {
+    let (pk,sk) = keygen(2048)?;
+    let real_message: Message = "This is an actual message".into();
+    let s: Signature = auth::sign(real_message, sk)?;
+    let forgery: Message = conf::encrypt(s.clone(), pk.clone());
+    let v: Verification = auth::verify(forgery,s,pk);
+
+    match v {
+        Verification::Accept => Err("forgery was accepted by verify".into()),
+        Verification::Reject => Ok(())
+    }
 }
