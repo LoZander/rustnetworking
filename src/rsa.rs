@@ -39,7 +39,7 @@ pub const E: i32 = 3;
 /// 
 /// # Examples
 /// ```rust
-/// use rustnetworking::rsa::{Plaintext,Ciphertext,encrypt,decrypt,keygen};
+/// use rustnetworking::rsa::{confidentiality::{Plaintext,Ciphertext,encrypt,decrypt},keygen};
 /// #
 /// # fn main() -> Result<(),String> {
 /// let (pk,sk) = keygen(2048)?;

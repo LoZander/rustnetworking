@@ -30,7 +30,7 @@ pub type Ciphertext = Message;
 /// 
 /// # Examples
 /// ```rust
-/// use rustnetworking::rsa::{Plaintext,Ciphertext,encrypt,decrypt,keygen};
+/// use rustnetworking::rsa::{confidentiality::{Plaintext,Ciphertext,encrypt,decrypt},keygen};
 /// #
 /// # fn main() -> Result<(),String> {
 /// let (pk,sk) = keygen(2048)?;
@@ -60,11 +60,11 @@ pub fn encrypt<T: Into<Plaintext>>(plaintext: T, pk: PublicKey) -> Ciphertext {
 /// 
 /// # Examples
 /// ```rust
-/// use rustnetworking::rsa::{Plaintext,Ciphertext,encrypt,decrypt,keygen};
+/// use rustnetworking::rsa::{confidentiality::{Plaintext,Ciphertext,encrypt,decrypt},keygen};
 ///
 /// # fn main() -> Result<(),String> {
 /// let (pk,sk) = keygen(2048)?;
-/// # let m: Plaintext = "Very secret message ;p".as_bytes().into();
+/// # let m: Plaintext = "Very secret message ;p".into();
 /// # let c: Ciphertext = encrypt(m, pk).into();
 /// // ...
 /// let decrypted = decrypt(c, sk)?;
@@ -84,7 +84,7 @@ pub fn decrypt<T: Into<Ciphertext>>(ciphertext: T, sk: SecretKey) -> Result<Plai
 
 fn create_d(p: &BigUint,q: &BigUint) -> Result<BigUint,String> {
     let big_one = BigUint::from_i32(1).unwrap();
-    let modulus: BigUint = (p.clone() - big_one.clone().into())? * (q.clone() - big_one.into())?;
+    let modulus: BigUint = (p.clone() - big_one.clone())? * (q.clone() - big_one)?;
 
     let d = modular::inverse(BigUint::from_i32(E).unwrap(), modulus)?;
     Ok(d)

@@ -2,9 +2,7 @@ use rustnetworking::{
     rsa::{
         authenticity::{self as auth, Signature, Verification},
         keygen, 
-        confidentiality::{self as conf, Message},
-        E}, 
-    big_num::BigUint};
+        confidentiality::{self as conf, Message}}};
 
 #[test]
 fn verification_of_correct_message_sign_pair_accepts() -> Result<(),String> {
