@@ -3,6 +3,7 @@ use crate::big_num::{BigUint, new_prime};
 pub mod confidentiality;
 pub mod authenticity;
 
+#[derive(Clone)]
 pub struct PublicKey {
     n: BigUint
 }
@@ -13,6 +14,7 @@ impl PublicKey {
     }
 }
 
+#[derive(Clone)]
 pub struct SecretKey {
     p: BigUint,
     q: BigUint
@@ -83,8 +85,6 @@ pub fn keygen(bit_size: u32) -> Result<KeyPair,String> {
     }
 
     let (p,q) = f(p_size,q_size)?;
-
-
 
     let n = p.clone() * q.clone();
 
