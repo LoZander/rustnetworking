@@ -54,6 +54,18 @@ impl BigUint {
     }
 }
 
+impl From<Vec<u8>> for BigUint {
+    fn from(value: Vec<u8>) -> Self {
+        BigUint::from_bytes_be(&value[..])
+    }
+}
+
+impl From<BigUint> for Vec<u8> {
+    fn from(value: BigUint) -> Self {
+        value.to_bytes_be()
+    }
+}
+
 impl Display for BigUint {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.inner.fmt(f)
