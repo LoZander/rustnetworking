@@ -1,3 +1,21 @@
+//! RSA encryption implementation.
+//! 
+//! This crate features RSA encryption and decryption.
+//! 
+//! # RSA
+//! RSA is a public-key, computational cryptography scheme.
+//! Computational refers to the fact that the system is only secure under
+//! the assumption that a given adversary has bounded time and resources.
+//! 
+//! "Public-key", or alternaively "asymetrical", means that this scheme has a different key
+//! for the reader, secret-key, and the sender, public-key. For a keypair, encryption is done with the public-key,
+//! which anyone can do, but only the owner of the secret-key can decrypt the message with this key.
+//! 
+//! # Security
+//! RSA has various security issues when used alone. It's therefore recommended to use OAEP[^note].
+//! 
+//! [^note]: `https://en.wikipedia.org/wiki/Optimal_asymmetric_encryption_padding`
+
 use crate::{big_num::{BigUint, new_prime}, modular};
 
 pub type Message = Vec<u8>;
@@ -19,7 +37,7 @@ pub struct SecretKey {
     q: BigUint
 }
 
-type KeyPair = (PublicKey, SecretKey);
+pub type KeyPair = (PublicKey, SecretKey);
 pub enum Key {
     PublicKey,
     SecretKey

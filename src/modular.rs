@@ -1,9 +1,19 @@
+//! A collection of modular arithmetic functions
+//! 
+//! For more about modular arithmetic see
+//! `https://en.wikipedia.org/wiki/Modular_arithmetic`
+
 use crate::big_num::{BigInt,BigUint,Sign};
 
-
-/**
-Implements the modular inverse according to the algorithm found at https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm#Computing_multiplicative_inverses_in_modular_structures
- */
+/// [`inverse`] calculates the modular inverse `x^(-1) (mod modulus)`.
+/// 
+/// The modular inverse `a^(-1)` is and integer such that `aa^(-1) = 1 (mod n).
+/// Remark that (mod n) is distinct from the normal binary % operation[^note].
+/// 
+/// [^note]: See `https://en.wikipedia.org/wiki/Modular_arithmetic`
+/// 
+/// This implementation is based on the algorithm found at 
+/// `https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm#Computing_multiplicative_inverses_in_modular_structures`
 pub fn inverse(x: BigUint, modulus: BigUint) -> Result<BigUint,String> {
     struct FData {
         t: BigInt,
