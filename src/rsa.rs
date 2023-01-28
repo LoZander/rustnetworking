@@ -2,7 +2,7 @@ extern crate bincode;
 use bincode::{serialize, deserialize};
 use serde::{Serialize, Deserialize};
 
-use crate::big_num::{BigUint, new_prime};
+use crate::big_num::{BigUint, new_prime, Digit};
 
 use self::{confidentiality::{Message, encrypt, Ciphertext, decrypt, Plaintext}, authenticity::{Signature, sign, verify, Verification}};
 
@@ -34,7 +34,7 @@ pub enum Key {
     SecretKey
 }
 
-pub const E: i32 = 3;
+pub const E: Digit = Digit::_3;
 
 
 /// [`keygen`] generates an RSA [`KeyPair`] with a given `bit_size`.
@@ -83,9 +83,9 @@ pub fn keygen(bit_size: u32) -> Result<KeyPair,String> {
             return f(p_size, q_size)
         }
 
-        let one = BigUint::from_i32(1)?;
+        let one: BigUint = Digit::_1.into();
         let modulus = (p_candidate.clone() - one.clone())? * (q_candidate.clone() - one)?;
-        if !BigUint::from_i32(E)?.co_prime(&modulus) {
+        if !BigUint::from(E).co_prime(&modulus) {
             return f(p_size, q_size)
         }
 

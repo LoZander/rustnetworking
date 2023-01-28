@@ -51,11 +51,6 @@ impl BigUint {
         BigUint{inner: num_primes::BigUint::new(digits)}
     }
 
-    pub fn from_i32(value: i32) -> Result<Self,String> {
-        let inner = num_primes::BigUint::from_i32(value).ok_or(format!("{value} could not be converted to BigInt"))?;
-        Ok(BigUint{inner})
-    }
-
     pub fn modpow(&self, exponent: &Self, modulus: &Self) -> Self {
         BigUint { inner: self.inner.modpow(&exponent.inner, &modulus.inner) }
     }
@@ -170,11 +165,6 @@ pub struct BigInt {
 impl BigInt {
     pub fn new(sign: Sign, digits: Vec<u32>) -> Self {
         BigInt{inner: bigint::BigInt::new(sign, digits)}
-    }
-
-    pub fn from_i32(value: i32) -> Result<Self,String> {
-        let inner = bigint::BigInt::from_i32(value).ok_or(format!("{value} could not be converted to BigInt"))?;
-        Ok(BigInt{inner})
     }
 
     pub fn gcd(&self, other: &Self) -> Self {

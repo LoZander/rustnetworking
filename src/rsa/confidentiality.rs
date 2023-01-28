@@ -16,7 +16,7 @@
 //! 
 //! [^note]: `https://en.wikipedia.org/wiki/Optimal_asymmetric_encryption_padding`
 
-use crate::{big_num::{BigUint}, modular};
+use crate::{big_num::{BigUint, Digit}, modular};
 
 use super::{PublicKey, SecretKey, E};
 
@@ -42,7 +42,7 @@ pub type Ciphertext = Message;
 /// ```
 pub fn encrypt<T: Into<Plaintext>>(plaintext: T, pk: &PublicKey) -> Ciphertext {
     let plaintext_as_number: BigUint = plaintext.into().into();
-    let cipher = plaintext_as_number.modpow(&BigUint::from_i32(E).unwrap(), &pk.n);
+    let cipher = plaintext_as_number.modpow(&E.into(), &pk.n);
     cipher.into()
 }
 
@@ -83,9 +83,8 @@ pub fn decrypt<T: Into<Ciphertext>>(ciphertext: T, sk: SecretKey) -> Result<Plai
 }
 
 fn create_d(p: &BigUint,q: &BigUint) -> Result<BigUint,String> {
-    let big_one = BigUint::from_i32(1).unwrap();
-    let modulus: BigUint = (p.clone() - big_one.clone())? * (q.clone() - big_one)?;
+    let big_1: BigUint = Digit::_1.into();
+    let modulus: BigUint = (p.clone() - big_1.clone())? * (q.clone() - big_1)?;
 
-    let d = modular::inverse(BigUint::from_i32(E).unwrap(), modulus)?;
-    Ok(d)
+    modular::inverse(E.into(), modulus)
 }
