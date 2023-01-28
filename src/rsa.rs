@@ -1,8 +1,16 @@
+extern crate bincode;
+use bincode::{serialize, deserialize};
+use serde::{Serialize, Deserialize};
+
 use crate::big_num::{BigUint, new_prime};
+
+use self::{confidentiality::{Message, encrypt, Ciphertext, decrypt, Plaintext}, authenticity::{Signature, sign, verify, Verification}};
 
 pub mod confidentiality;
 pub mod authenticity;
 
+#[derive(Clone)]
+#[derive(Serialize,Deserialize,Debug)]
 pub struct PublicKey {
     n: BigUint
 }
@@ -13,6 +21,8 @@ impl PublicKey {
     }
 }
 
+#[derive(Clone)]
+#[derive(Serialize,Deserialize,Debug)]
 pub struct SecretKey {
     p: BigUint,
     q: BigUint
@@ -37,13 +47,13 @@ pub const E: i32 = 3;
 /// 
 /// # Examples
 /// ```rust
-/// use rustnetworking::rsa::{Plaintext,Ciphertext,encrypt,decrypt,keygen};
+/// use rustnetworking::rsa::{confidentiality::{Plaintext,Ciphertext,encrypt,decrypt},keygen};
 /// #
 /// # fn main() -> Result<(),String> {
 /// let (pk,sk) = keygen(2048)?;
 /// 
 /// let m: Plaintext = "Very secret message ;p".as_bytes().into();
-/// let c: Ciphertext = encrypt(m, pk).into();
+/// let c: Ciphertext = encrypt(m, &pk).into();
 /// let decrypted = decrypt(c, sk)?;
 /// # Ok(())
 /// # }
@@ -84,11 +94,43 @@ pub fn keygen(bit_size: u32) -> Result<KeyPair,String> {
 
     let (p,q) = f(p_size,q_size)?;
 
-
-
     let n = p.clone() * q.clone();
 
     let public_key = PublicKey{n};
     let secret_key = SecretKey{p,q};
     Ok((public_key, secret_key))
+}
+
+
+#[derive(Serialize,Deserialize,Debug)]
+pub struct Data {
+    pub message: Message,
+    pub signature: Signature,
+    pub sender: PublicKey,
+}
+
+pub fn pack<T: Into<Plaintext>>(message: T, sender: KeyPair, receiver: &PublicKey) -> Result<Ciphertext,String> {
+    let (sender_pk, sender_sk) = sender;
+    let plaintext = message.into();
+    let data = Data {
+        message: plaintext.clone(),
+        signature: sign(plaintext, sender_sk)?,
+        sender: sender_pk
+    };
+
+    let data_bytes = serialize(&data).map_err(|err| err.to_string())?;
+    let encrypted = encrypt(data_bytes, receiver);
+    Ok(encrypted)
+}
+
+pub fn unpack<T: Into<Ciphertext>>(ciphertext: T, receiver: SecretKey) -> Result<Plaintext,String> {
+    let decrypted = decrypt(ciphertext, receiver)?;
+    let data: Data = deserialize(&decrypted).map_err(|err| err.to_string())?;
+    
+    let verification = verify(data.message.clone(), data.signature, data.sender);
+
+    match verification {
+        Verification::Reject => Err("verification rejected".into()),
+        Verification::Accept => Ok(data.message)
+    }
 }
