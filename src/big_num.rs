@@ -15,6 +15,19 @@ pub struct BigUint {
     inner: num_primes::BigUint
 }
 
+pub enum Digit {
+    _0,
+    _1,
+    _2,
+    _3,
+    _4,
+    _5,
+    _6,
+    _7,
+    _8,
+    _9,
+}
+
 impl BigUint {
     pub fn new(digits: Vec<u32>) -> Self {
         BigUint{inner: num_primes::BigUint::new(digits)}
@@ -57,6 +70,23 @@ impl BigUint {
 impl From<Vec<u8>> for BigUint {
     fn from(value: Vec<u8>) -> Self {
         BigUint::from_bytes_be(&value[..])
+    }
+}
+
+impl From<Digit> for BigUint {
+    fn from(value: Digit) -> Self {
+        match value {
+            Digit::_0 => BigUint::new(vec![0]),
+            Digit::_1 => BigUint::new(vec![1]),
+            Digit::_2 => BigUint::new(vec![2]),
+            Digit::_3 => BigUint::new(vec![3]),
+            Digit::_4 => BigUint::new(vec![4]),
+            Digit::_5 => BigUint::new(vec![5]),
+            Digit::_6 => BigUint::new(vec![6]),
+            Digit::_7 => BigUint::new(vec![7]),
+            Digit::_8 => BigUint::new(vec![8]),
+            Digit::_9 => BigUint::new(vec![9]),
+        }
     }
 }
 
@@ -178,6 +208,23 @@ impl From<BigUint> for BigInt {
 impl From<BigInt> for BigUint {
     fn from(item: BigInt) -> Self {
         BigUint{inner: num_primes::BigUint::from_bytes_be(&item.inner.to_bytes_be().1)}
+    }
+}
+
+impl From<Digit> for BigInt {
+    fn from(value: Digit) -> Self {
+        match value {
+            Digit::_0 => BigInt::new(Sign::Plus,vec![0]),
+            Digit::_1 => BigInt::new(Sign::Plus,vec![1]),
+            Digit::_2 => BigInt::new(Sign::Plus,vec![2]),
+            Digit::_3 => BigInt::new(Sign::Plus,vec![3]),
+            Digit::_4 => BigInt::new(Sign::Plus,vec![4]),
+            Digit::_5 => BigInt::new(Sign::Plus,vec![5]),
+            Digit::_6 => BigInt::new(Sign::Plus,vec![6]),
+            Digit::_7 => BigInt::new(Sign::Plus,vec![7]),
+            Digit::_8 => BigInt::new(Sign::Plus,vec![8]),
+            Digit::_9 => BigInt::new(Sign::Plus,vec![9]),
+        }
     }
 }
 
