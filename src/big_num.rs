@@ -3,7 +3,7 @@ use std::{ops::{Add, Sub, Mul, Div, Rem}, fmt::Display};
 extern crate num_primes;
 use num_primes::{Generator};
 extern crate num;
-use num::{bigint, FromPrimitive, Integer};
+use num::{bigint, Integer};
 use serde::{Serialize, Deserialize};
 
 pub type Sign = num::bigint::Sign;

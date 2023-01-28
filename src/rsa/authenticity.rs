@@ -53,8 +53,8 @@ pub fn sign<T: Into<Message>>(message: T, sk: SecretKey) -> Result<Signature,Str
 /// # Security
 /// To prevent forgery attacks, [`verify`] assumes the signing is done on a hash of the message
 /// and so it verifies the signature against not the message, but a hashing of it.
-pub fn verify<T: Into<Message>>(message: T, signature: Signature, pk: PublicKey) -> Verification {
-    let unsign: Message = encrypt(signature, &pk);
+pub fn verify<T: Into<Message>>(message: T, signature: Signature, pk: &PublicKey) -> Verification {
+    let unsign: Message = encrypt(signature, pk);
     if hash(message) == unsign {
         Verification::Accept
     } else {

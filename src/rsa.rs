@@ -127,7 +127,7 @@ pub fn unpack<T: Into<Ciphertext>>(ciphertext: T, receiver: SecretKey) -> Result
     let decrypted = decrypt(ciphertext, receiver)?;
     let data: Data = deserialize(&decrypted).map_err(|err| err.to_string())?;
     
-    let verification = verify(data.message.clone(), data.signature, data.sender);
+    let verification = verify(data.message.clone(), data.signature, &data.sender);
 
     match verification {
         Verification::Reject => Err("verification rejected".into()),
