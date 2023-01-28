@@ -4,6 +4,7 @@ extern crate num_primes;
 use num_primes::{Generator};
 extern crate num;
 use num::{bigint, FromPrimitive, Integer};
+use serde::{Serialize, Deserialize};
 
 pub type Sign = num::bigint::Sign;
 
@@ -13,6 +14,23 @@ pub type Sign = num::bigint::Sign;
 #[derive(Default)]
 pub struct BigUint {
     inner: num_primes::BigUint
+}
+
+impl Serialize for BigUint {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer {
+        let bytes: Vec<u8> = self.clone().into();
+        bytes.serialize(serializer)
+    }
+}
+
+impl <'de>Deserialize<'de> for BigUint {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de> {
+        Ok(Vec::<u8>::deserialize(deserializer)?.into())
+    }
 }
 
 pub enum Digit {

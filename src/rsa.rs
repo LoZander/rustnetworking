@@ -1,9 +1,16 @@
+extern crate bincode;
+use bincode::{serialize, deserialize};
+use serde::{Serialize, Deserialize};
+
 use crate::big_num::{BigUint, new_prime};
+
+use self::{confidentiality::{Message, encrypt, Ciphertext, decrypt, Plaintext}, authenticity::{Signature, sign, verify, Verification}};
 
 pub mod confidentiality;
 pub mod authenticity;
 
 #[derive(Clone)]
+#[derive(Serialize,Deserialize,Debug)]
 pub struct PublicKey {
     n: BigUint
 }
@@ -15,6 +22,7 @@ impl PublicKey {
 }
 
 #[derive(Clone)]
+#[derive(Serialize,Deserialize,Debug)]
 pub struct SecretKey {
     p: BigUint,
     q: BigUint
@@ -91,4 +99,37 @@ pub fn keygen(bit_size: u32) -> Result<KeyPair,String> {
     let public_key = PublicKey{n};
     let secret_key = SecretKey{p,q};
     Ok((public_key, secret_key))
+}
+
+
+#[derive(Serialize,Deserialize,Debug)]
+pub struct Data {
+    pub message: Message,
+    pub signature: Signature,
+    pub sender: PublicKey,
+}
+
+pub fn pack(message: Message, sender: KeyPair, receiver: &PublicKey) -> Result<Ciphertext,String> {
+    let (sender_pk, sender_sk) = sender;
+    let data = Data {
+        message: message.clone(),
+        signature: sign(message, sender_sk)?,
+        sender: sender_pk
+    };
+
+    let data_bytes = serialize(&data).map_err(|err| err.to_string())?;
+    let encrypted = encrypt(data_bytes, receiver);
+    Ok(encrypted)
+}
+
+pub fn unpack(ciphertext: Ciphertext, receiver: SecretKey) -> Result<Plaintext,String> {
+    let decrypted = decrypt(ciphertext, receiver)?;
+    let data: Data = deserialize(&decrypted).map_err(|err| err.to_string())?;
+    
+    let verification = verify(data.message.clone(), data.signature, data.sender);
+
+    match verification {
+        Verification::Reject => Err("verification rejected".into()),
+        Verification::Accept => Ok(data.message)
+    }
 }
