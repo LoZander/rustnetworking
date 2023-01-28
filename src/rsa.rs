@@ -109,6 +109,19 @@ pub struct Data {
     pub sender: PublicKey,
 }
 
+/// [`pack`] creates a ciphertext message which supports both RSA confidentiality and authenticity.
+/// 
+/// [`pack`] does this by packing the message with [`Signature`] of the sender and encrypts this
+/// under the [`PublicKey`] of the intended reciever. This message can then be sent to the receiver.
+/// 
+/// # Security
+/// [`pack`] supports
+/// 
+/// - RSA authenticity as an RSA [`Signature`] is sent alongside the message.
+/// - RSA confidentiality as the message and [`Signature`] is encrypted under RSA.
+/// 
+/// # Errors
+/// [`pack`] may give an error as signing the message may fail.
 pub fn pack<T: Into<Plaintext>>(message: T, sender: KeyPair, receiver: &PublicKey) -> Result<Ciphertext,String> {
     let (sender_pk, sender_sk) = sender;
     let plaintext = message.into();
@@ -123,6 +136,18 @@ pub fn pack<T: Into<Plaintext>>(message: T, sender: KeyPair, receiver: &PublicKe
     Ok(encrypted)
 }
 
+/// [`unpack`] unpacks a ciphertext that has been packed by [`pack`].
+/// 
+/// [`unpack`] does this by first decrypting the [`Ciphertext`] using the receivers [`SecretKey`].
+/// Then the [`Signature`] is verified under the senders [`PublicKey`]
+/// 
+/// # Errors
+/// [`unpack`] may give an error if
+/// 
+/// - Decryption fails. This could be because the message is corrupted or injected.
+/// - Deserialization of the data fails. This means the data was in an improper format.
+/// - Verification failed. This means the [`Signature`] did not match the message.
+/// This could suggest an adversary pretending to be someone else.
 pub fn unpack<T: Into<Ciphertext>>(ciphertext: T, receiver: SecretKey) -> Result<Plaintext,String> {
     let decrypted = decrypt(ciphertext, receiver)?;
     let data: Data = deserialize(&decrypted).map_err(|err| err.to_string())?;
