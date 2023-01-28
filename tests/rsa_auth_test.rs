@@ -36,7 +36,7 @@ fn message_cannot_be_forged_so_verification_accepts() -> Result<(),String> {
     let (pk,sk) = keygen(2048)?;
     let real_message: Message = "This is an actual message".into();
     let s: Signature = auth::sign(real_message, sk)?;
-    let forgery: Message = conf::encrypt(s.clone(), pk.clone());
+    let forgery: Message = conf::encrypt(s.clone(), &pk.clone());
     let v: Verification = auth::verify(forgery,s,pk);
 
     match v {

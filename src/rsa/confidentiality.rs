@@ -36,11 +36,11 @@ pub type Ciphertext = Message;
 /// let (pk,sk) = keygen(2048)?;
 /// 
 /// let m: Plaintext = "Very secret message ;p".as_bytes().into();
-/// let c: Ciphertext = encrypt(m, pk).into();
+/// let c: Ciphertext = encrypt(m, &pk).into();
 /// # Ok(())
 /// # }
 /// ```
-pub fn encrypt<T: Into<Plaintext>>(plaintext: T, pk: PublicKey) -> Ciphertext {
+pub fn encrypt<T: Into<Plaintext>>(plaintext: T, pk: &PublicKey) -> Ciphertext {
     let plaintext_as_number: BigUint = plaintext.into().into();
     let cipher = plaintext_as_number.modpow(&BigUint::from_i32(E).unwrap(), &pk.n);
     cipher.into()
@@ -65,7 +65,7 @@ pub fn encrypt<T: Into<Plaintext>>(plaintext: T, pk: PublicKey) -> Ciphertext {
 /// # fn main() -> Result<(),String> {
 /// let (pk,sk) = keygen(2048)?;
 /// # let m: Plaintext = "Very secret message ;p".into();
-/// # let c: Ciphertext = encrypt(m, pk).into();
+/// # let c: Ciphertext = encrypt(m, &pk).into();
 /// // ...
 /// let decrypted = decrypt(c, sk)?;
 /// # Ok(())

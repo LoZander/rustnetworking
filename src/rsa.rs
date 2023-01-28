@@ -45,7 +45,7 @@ pub const E: i32 = 3;
 /// let (pk,sk) = keygen(2048)?;
 /// 
 /// let m: Plaintext = "Very secret message ;p".as_bytes().into();
-/// let c: Ciphertext = encrypt(m, pk).into();
+/// let c: Ciphertext = encrypt(m, &pk).into();
 /// let decrypted = decrypt(c, sk)?;
 /// # Ok(())
 /// # }
