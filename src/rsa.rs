@@ -109,11 +109,12 @@ pub struct Data {
     pub sender: PublicKey,
 }
 
-pub fn pack(message: Message, sender: KeyPair, receiver: &PublicKey) -> Result<Ciphertext,String> {
+pub fn pack<T: Into<Plaintext>>(message: T, sender: KeyPair, receiver: &PublicKey) -> Result<Ciphertext,String> {
     let (sender_pk, sender_sk) = sender;
+    let plaintext = message.into();
     let data = Data {
-        message: message.clone(),
-        signature: sign(message, sender_sk)?,
+        message: plaintext.clone(),
+        signature: sign(plaintext, sender_sk)?,
         sender: sender_pk
     };
 
@@ -122,7 +123,7 @@ pub fn pack(message: Message, sender: KeyPair, receiver: &PublicKey) -> Result<C
     Ok(encrypted)
 }
 
-pub fn unpack(ciphertext: Ciphertext, receiver: SecretKey) -> Result<Plaintext,String> {
+pub fn unpack<T: Into<Ciphertext>>(ciphertext: T, receiver: SecretKey) -> Result<Plaintext,String> {
     let decrypted = decrypt(ciphertext, receiver)?;
     let data: Data = deserialize(&decrypted).map_err(|err| err.to_string())?;
     
