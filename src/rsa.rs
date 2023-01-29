@@ -29,11 +29,6 @@ pub struct SecretKey {
 }
 
 pub type KeyPair = (PublicKey, SecretKey);
-pub enum Key {
-    PublicKey,
-    SecretKey
-}
-
 pub const E: Digit = Digit::_3;
 
 
