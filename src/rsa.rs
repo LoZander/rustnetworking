@@ -98,7 +98,7 @@ pub fn keygen(bit_size: u32) -> Result<KeyPair,String> {
 
 
 #[derive(Serialize,Deserialize,Debug)]
-pub struct Data {
+struct Data {
     pub message: Message,
     pub signature: Signature,
     pub sender: PublicKey,
